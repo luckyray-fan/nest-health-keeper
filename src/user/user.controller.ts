@@ -9,7 +9,10 @@ export class UserController {
 	constructor(private readonly usersService: UserService, private readonly authService: AuthService) {}
   @Public()
   @Post('login')
-  async login(@Body() loginParmas: any) {
+  async login(@Body() loginParmas: any, isUpdate?) {
+    if(isUpdate){
+      return this.authService.certificate({user:loginParmas});
+    }
     console.log('JWT验证 - Step 1: 用户请求登录');
     const authResult = await this.authService.validateUser(loginParmas.user, loginParmas.pass);
     switch (authResult.code) {
@@ -35,9 +38,13 @@ export class UserController {
   }
   // @UseGuards(AuthGuard('jwt'))
   @Post('update')
-  update(@Body() user, @Request() req){
-    return '123';
-    return this.usersService.update(user)
+  async update(@Body() user, @Request() req){
+    const updateUser = await this.usersService.update(user, req.user.id)
+    return this.login(updateUser, true)
+  }
+  @Post('update/pass')
+  async updatePass(@Body() pass, @Request() req){
+    return this.usersService.register({...pass, user: req.user.user}, true)
   }
   @Public()
   @Post('register')

@@ -1,6 +1,7 @@
 {
   "watch": [
-      "src"
+      "src",
+      "ormconfig.json"
   ],
   "ext": "ts",
   "ignore": [

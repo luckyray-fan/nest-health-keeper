@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // payload, 通过验证后返回的
   async validate(payload: any, @Request() request) {
     console.log(`JWT验证 - Step 4: 被守卫调用`, payload);
-    request.authInfos = payload.user;
+    request.authInfos = payload;
     return payload;
   }
 }
