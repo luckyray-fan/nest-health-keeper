@@ -16,13 +16,21 @@ import { UserEntity } from './user/user.entity';
 import { UserService } from './user/user.service';
 import { UploadController } from './upload/upload.controller';
 import { PostInterceptor } from './common/post.interceptor';
-import {SpuEntity} from './entity/spu';
+import { SpuEntity } from './entity/spu';
 import { SpuController } from './controller/spu';
 import { ResultInterceptor } from './common/result.interceptor';
 import { ApparatusEntity } from './entity/apparatus';
 import { CommentEntity } from './entity/comment';
 import { CommentController } from './controller/comment';
 import { ApparatusController } from './controller/apparatus';
+import { OrderEntity } from './entity/order';
+import { ReserveEntity } from './entity/reserve';
+import { ReserveController } from './controller/reserve';
+import { ServiceController } from './controller/service';
+import { ServiceEntity } from './entity/service';
+import { OrderController } from './controller/order';
+import { RecordEntity } from './entity/record';
+import { RecordController } from './controller/record';
 
 // https://stackoverflow.com/a/61119284/9950564
 // https://juejin.cn/post/6857391336929263624#heading-12 一个用nodemon全程ts使用, 一个改写orm config读取的路径
@@ -30,14 +38,34 @@ import { ApparatusController } from './controller/apparatus';
   imports: [
     // mysql的连接
     TypeOrmModule.forRoot(),
-    TypeOrmModule.forFeature([UserEntity, SpuEntity, ApparatusEntity, CommentEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      SpuEntity,
+      ApparatusEntity,
+      CommentEntity,
+      OrderEntity,
+      ReserveEntity,
+      ServiceEntity,
+      RecordEntity
+    ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '80d' }, // token 过期时效
     }),
   ],
-  controllers: [AppController, UserController, UploadController, SpuController, ApparatusController, CommentController],
+  controllers: [
+    AppController,
+    UserController,
+    UploadController,
+    SpuController,
+    ApparatusController,
+    CommentController,
+    ReserveController,
+    ServiceController,
+    OrderController,
+    RecordController
+  ],
   providers: [
     {
       provide: APP_INTERCEPTOR,

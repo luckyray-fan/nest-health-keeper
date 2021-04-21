@@ -15,7 +15,11 @@ export class UserService {
       return this.userRepository.find();
     }
     async findOne(user): Promise<UserEntity> {
-      return this.userRepository.findOne({user});
+      return this.userRepository.createQueryBuilder('user')
+      .addSelect('user.pass')
+      .addSelect('user.pass_salt')
+      .where({user})
+      .getOne();
     }
     async create(userData): Promise<UserEntity> {
       return await this.userRepository.save(userData)

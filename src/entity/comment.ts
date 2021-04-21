@@ -1,3 +1,4 @@
+import { UserEntity } from 'src/user/user.entity';
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ApparatusEntity } from './apparatus';
 import { SpuEntity } from './spu';
@@ -12,12 +13,15 @@ export class CommentEntity {
   @UpdateDateColumn()
   comment_update_time: string;
   @Column('int')
+  @ManyToOne(() => UserEntity, UserEntity => UserEntity.id)
   @Index()
   comment_owner: number;
+  @ManyToOne(() => UserEntity, UserEntity=>UserEntity.id, {eager:true})
+  comment_user: UserEntity;
   @Column('int')
-  @ManyToOne(() => SpuEntity, SpuEntity => SpuEntity.spu_id)
+  @ManyToOne(() => SpuEntity, SpuEntity => SpuEntity.spu_id, {eager:true})
   @Index()
-  comment_spu: number;
+  comment_spu: SpuEntity;
   @Column('int')
   comment_value: number;
 }

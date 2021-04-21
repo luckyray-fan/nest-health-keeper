@@ -4,7 +4,7 @@ import moment from 'moment-es6';
 import { CommentEntity } from 'src/entity/comment';
 import { SpuEntity } from 'src/entity/spu';
 import { Public } from 'src/utils/decorator';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Controller('spu')
 export class SpuController {
@@ -20,28 +20,21 @@ export class SpuController {
   async list() {
     return await this.find();
   }
+  @Get('ids')
+  async getIds(@Query() query) {
+    const spuIdList = query.spuIdList;
+
+    return await this.spuRepository.find({
+      where: { spu_id: In(spuIdList) },
+    });
+  }
   @Public()
   @Get('id')
   async get(@Query() query) {
     const spu_id = query.spu_id;
     if (query.get_comment) {
       return (
-        await this.commentRepository
-          .createQueryBuilder('comment')
-          .innerJoinAndSelect(
-            SpuEntity,
-            'spu',
-            'spu.spu_id = comment.comment_spu',
-          )
-          .getRawMany()
-      ).map((i) => {
-        const res = {};
-        Object.keys(i).map((j) => {
-          const key = j.replace(/.*?_/, '');
-          res[key] = i[j];
-        });
-        return res;
-      });
+        await this.spuRepository.find({ relations: ["comments"] }))
     }
     return await this.find(spu_id);
   }

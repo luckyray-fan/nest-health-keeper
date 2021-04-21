@@ -8,10 +8,8 @@ export class ServiceEntity {
   service_name: string;
   @CreateDateColumn()
   service_add_time: string;
-  @Column('int')
-  service_type: number;
-  @Column('int')
-  service_apparatus: number;
+  @Column('simple-array')
+  service_apparatus: Array<number>;
   @Column({type:'json'})
   service_data: any;
 }

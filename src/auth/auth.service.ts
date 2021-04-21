@@ -12,6 +12,7 @@ export class AuthService {
     console.log('JWT验证 - Step 2: 校验用户信息');
     const user = await this.usersService.findOne(username);
     if (user) {
+      console.log(user)
       const hashedPassword = user.pass;
       const salt = user.pass_salt;
       // 通过密码盐，加密传参，再与数据库里的比较，判断是否相等

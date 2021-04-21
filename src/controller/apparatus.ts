@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import moment from 'moment-es6';
 import { ApparatusEntity } from 'src/entity/apparatus';
+import { ServiceEntity } from 'src/entity/service';
 import { Public } from 'src/utils/decorator';
 import { Repository } from 'typeorm';
 
@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 export class ApparatusController {
   constructor(
     @InjectRepository(ApparatusEntity)
-    private readonly apparatusRepository: Repository<ApparatusEntity>,
+    private readonly repository: Repository<ApparatusEntity>,
   ) {}
   @Public()
   @Get('id')
@@ -21,16 +21,16 @@ export class ApparatusController {
   async create(@Body() body) {
     body = {
       apparatus_name: '血液检查仪',
-      apparatus_data: {
-
-      },
+      apparatus_type: 1,
+      apparatus_time: '[[8,9],[9,10],[10,11],[10,12],[14,15],[15,16]]',
+      apparatus_data: {}
     };
-    this.apparatusRepository.save(body);
+    this.repository.save(body);
   }
   async find(apparatus_id?): Promise<ApparatusEntity[]> {
     let res;
-    if (apparatus_id) res = await this.apparatusRepository.find({ apparatus_id });
-    else res = await this.apparatusRepository.find();
+    if (apparatus_id) res = await this.repository.find({ apparatus_id });
+    else res = await this.repository.find();
     return res
   }
 }

@@ -17,5 +17,5 @@ export class SpuEntity {
   @Column({type:'json'})
   spu_data: any;
   @OneToMany(type => CommentEntity, CommentEntity => CommentEntity.comment_spu)
-  images: CommentEntity[];
+  comments: CommentEntity[];
 }

@@ -1,4 +1,5 @@
-  import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+  import { CommentEntity } from 'src/entity/comment';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('user')
 export class UserEntity {
   @PrimaryGeneratedColumn()
@@ -7,9 +8,9 @@ export class UserEntity {
   @Column('int')
   user: number;
 
-  @Column('varchar')
+  @Column('varchar', { select: false })
   pass: string;
-  @Column('varchar')
+  @Column('varchar', { select: false })
   pass_salt: string;
   @Column({
     default: 0,
@@ -17,6 +18,8 @@ export class UserEntity {
   })
   user_type: number;
 
-  @Column('text')
+  @Column('json')
   user_data: string;
+  @OneToMany(type => CommentEntity, CommentEntity => CommentEntity.comment_spu)
+  comments: CommentEntity[]
 }

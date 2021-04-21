@@ -20,10 +20,10 @@ export class CommentController {
   @Post('create')
   async create(@Body() body) {
     body = {
-      comment_content: '这个产品真的其实还不错哟~',
+      comment_content: '真的可以捏~',
       comment_owner: 1,
       comment_spu: 2,
-      comment_value: 5
+      comment_value: 4,
     };
     this.repository.save(body);
   }
