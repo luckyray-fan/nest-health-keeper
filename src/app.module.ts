@@ -31,6 +31,7 @@ import { ServiceEntity } from './entity/service';
 import { OrderController } from './controller/order';
 import { RecordEntity } from './entity/record';
 import { RecordController } from './controller/record';
+import { TransactionEntity } from './entity/transaction';
 
 // https://stackoverflow.com/a/61119284/9950564
 // https://juejin.cn/post/6857391336929263624#heading-12 一个用nodemon全程ts使用, 一个改写orm config读取的路径
@@ -46,7 +47,8 @@ import { RecordController } from './controller/record';
       OrderEntity,
       ReserveEntity,
       ServiceEntity,
-      RecordEntity
+      RecordEntity,
+      TransactionEntity
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({

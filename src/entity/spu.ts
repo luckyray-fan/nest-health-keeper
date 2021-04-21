@@ -16,6 +16,8 @@ export class SpuEntity {
   spu_price: string;
   @Column({type:'json'})
   spu_data: any;
+  @Column('simple-array')
+  spu_service: Array<number>;
   @OneToMany(type => CommentEntity, CommentEntity => CommentEntity.comment_spu)
   comments: CommentEntity[];
 }

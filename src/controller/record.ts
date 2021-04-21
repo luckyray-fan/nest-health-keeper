@@ -6,14 +6,21 @@ import { ReserveEntity } from 'src/entity/reserve';
 import { Public } from 'src/utils/decorator';
 import { Repository } from 'typeorm';
 import { RecordEntity } from 'src/entity/record';
+import { SpuEntity } from 'src/entity/spu';
+import { OrderEntity } from 'src/entity/order';
+import { ServiceEntity } from 'src/entity/service';
 
 @Controller('record')
 export class RecordController {
   constructor(
     @InjectRepository(RecordEntity)
     private readonly repository: Repository<RecordEntity>,
-    @InjectRepository(ReserveEntity)
-    private readonly serviceRepository: Repository<ReserveEntity>,
+    @InjectRepository(ServiceEntity)
+    private readonly serviceRepository: Repository<ServiceEntity>,
+    @InjectRepository(SpuEntity)
+    private readonly spuRepository: Repository<SpuEntity>,
+    @InjectRepository(OrderEntity)
+    private readonly orderRepository: Repository<OrderEntity>,
   ) {}
   @Public()
   @Get('id')
@@ -23,7 +30,45 @@ export class RecordController {
   }
   @Get('list')
   async list(@Request() request) {
+    const record = await this.repository.find({ record_user: request.user.id });
+    const spuObj = {};
+    const orderObj = {};
+    const serviceObj = {};
+    await Promise.all(
+      record.map(async (i) => {
+        if (!spuObj[i.record_spu]) {
+          spuObj[i.record_spu] = await this.spuRepository.findOne({
+            spu_id: i.record_spu,
+          });
+        }
+        if (!orderObj[i.record_order]) {
+          orderObj[i.record_order] = await this.orderRepository.findOne({
+            order_id: i.record_order,
+          });
+        }
+        await Promise.all( Object.keys(i.service_status).map(async (j)=>{
+          if (!serviceObj[j]) {
+            serviceObj[j] = await this.serviceRepository.findOne({
+              service_id: +j,
+            });
+          }
+        }))
 
+      }),
+    );
+    const recordRes = record.map(i=>{
+      const tem  = {} as any;
+      tem.spu = spuObj[i.record_spu];
+      tem.order = orderObj[i.record_order];
+      Object.keys(i.service_status).map(j=>{
+        i.service_status[j] = {
+          ...i.service_status[j],
+          ...serviceObj[j]
+        }
+      })
+      return {...i,...tem};
+    })
+    return recordRes;
   }
   @Post('/')
   async reserve(@Body() body, @Request() request) {
@@ -47,6 +92,6 @@ export class RecordController {
     let res;
     if (record_id) res = await this.repository.find({ record_id });
     else res = await this.repository.find();
-    return res
+    return res;
   }
 }
