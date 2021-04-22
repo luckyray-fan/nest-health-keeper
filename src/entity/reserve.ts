@@ -8,6 +8,10 @@ export class ReserveEntity {
   @Column()
   reserve_record: number;
   @Column()
+  reserve_cancel: number;
+  @Column()
+  reserve_service: number;
+  @Column()
   reserve_date: string;
   @Column('simple-array')
   reserve_time: Array<number>;
