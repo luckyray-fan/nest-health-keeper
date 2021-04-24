@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import moment from 'moment-es6';
 import { CommentEntity } from 'src/entity/comment';
+import { RecordEntity } from 'src/entity/record';
 import { Public } from 'src/utils/decorator';
 import { Repository } from 'typeorm';
 
@@ -10,12 +11,28 @@ export class CommentController {
   constructor(
     @InjectRepository(CommentEntity)
     private readonly repository: Repository<CommentEntity>,
+    @InjectRepository(RecordEntity)
+    private readonly recordRepository: Repository<RecordEntity>
   ) {}
   @Public()
   @Get('id')
   async get(@Query() query) {
     const spu_id = query.spu_id;
     return await this.find(spu_id);
+  }
+  @Post('/')
+  async comment(@Body() body, @Request() request) {
+    const res = {
+      comment_content: body.comment,
+      comment_owner: request.user.id,
+      comment_user: request.user.id,
+      comment_spu: body.spu.spu_id,
+      comment_value: body.rate,
+    };
+    const tem = await this.repository.save(res);
+    const record = await this.recordRepository.findOne({record_id: body.record_id});
+    record.record_comment = tem.comment_id
+    this.recordRepository.save(record);
   }
   @Post('create')
   async create(@Body() body) {

@@ -10,6 +10,8 @@ export class RecordEntity {
   record_spu: number;
   @Column()
   record_order: number;
+  @Column()
+  record_comment: number;
   @Column('json')
   service_status: any;
   @Column({type:'json'})

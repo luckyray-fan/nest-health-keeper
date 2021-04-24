@@ -9,6 +9,7 @@ import { RecordEntity } from 'src/entity/record';
 import { SpuEntity } from 'src/entity/spu';
 import { OrderEntity } from 'src/entity/order';
 import { ServiceEntity } from 'src/entity/service';
+import { CommentEntity } from 'src/entity/comment';
 
 @Controller('record')
 export class RecordController {
@@ -21,6 +22,8 @@ export class RecordController {
     private readonly spuRepository: Repository<SpuEntity>,
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
+    @InjectRepository(CommentEntity)
+    private readonly commentRepository: Repository<CommentEntity>,
   ) {}
   @Public()
   @Get('id')
@@ -34,6 +37,7 @@ export class RecordController {
     const spuObj = {};
     const orderObj = {};
     const serviceObj = {};
+    const commentObj = {};
     await Promise.all(
       record.map(async (i) => {
         if (!spuObj[i.record_spu]) {
@@ -44,6 +48,11 @@ export class RecordController {
         if (!orderObj[i.record_order]) {
           orderObj[i.record_order] = await this.orderRepository.findOne({
             order_id: i.record_order,
+          });
+        }
+        if (!commentObj[i.record_comment]) {
+          commentObj[i.record_comment] = await this.commentRepository.findOne({
+            comment_id: i.record_comment,
           });
         }
         await Promise.all( Object.keys(i.service_status).map(async (j)=>{
@@ -60,6 +69,7 @@ export class RecordController {
       const tem  = {} as any;
       tem.spu = spuObj[i.record_spu];
       tem.order = orderObj[i.record_order];
+      tem.comment = commentObj[i.record_comment]
       Object.keys(i.service_status).map(j=>{
         i.service_status[j] = {
           ...i.service_status[j],

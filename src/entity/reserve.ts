@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 @Entity('reserve')
 export class ReserveEntity {
   @PrimaryGeneratedColumn()
@@ -9,6 +9,8 @@ export class ReserveEntity {
   reserve_record: number;
   @Column()
   reserve_cancel: number;
+  @UpdateDateColumn()
+  reserve_update_time: string;
   @Column()
   reserve_service: number;
   @Column()
