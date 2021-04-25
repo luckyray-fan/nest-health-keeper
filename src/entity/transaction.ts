@@ -26,6 +26,8 @@ export class TransactionEntity {
   @Column()
   transaction_price: number;
   @Column()
+  transaction_refund: number;
+  @Column()
   transaction_pay_money:number;
   @Column()
   transaction_pay_credit:number;

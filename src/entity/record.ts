@@ -8,6 +8,7 @@ export class RecordEntity {
   record_user: number;
   @Column()
   record_spu: number;
+  @Index()
   @Column()
   record_order: number;
   @Column()
