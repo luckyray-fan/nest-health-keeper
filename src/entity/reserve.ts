@@ -22,4 +22,6 @@ export class ReserveEntity {
   @Index()
   @Column()
   reserve_apparatus: number;
+  @Column({type:'json'})
+  reserve_data: any;
 }

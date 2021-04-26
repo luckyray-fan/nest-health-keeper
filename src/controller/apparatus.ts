@@ -20,7 +20,7 @@ export class ApparatusController {
   @Post('create')
   async create(@Body() body) {
     body = {
-      apparatus_name: '血液检查仪',
+      apparatus_name: '视力检查仪',
       apparatus_type: 1,
       apparatus_time: '[[8,9],[9,10],[10,11],[10,12],[14,15],[15,16]]',
       apparatus_data: {}

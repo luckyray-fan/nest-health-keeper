@@ -12,6 +12,8 @@ export class OrderEntity {
   order_price: number;
   @Column()
   order_status: number;
+  @Column()
+  order_usecredit: number;
   @Column({type:'json'})
   order_data: any;
 }

@@ -7,6 +7,7 @@ import { Public } from 'src/utils/decorator';
 import { Repository } from 'typeorm';
 import { ServiceEntity } from 'src/entity/service';
 import { RecordEntity } from 'src/entity/record';
+import { ExperienceEntity } from 'src/entity/experience';
 
 @Controller('reserve')
 export class ReserveController {
@@ -17,6 +18,8 @@ export class ReserveController {
     private readonly serviceRepository: Repository<ServiceEntity>,
     @InjectRepository(RecordEntity)
     private readonly recordRepository: Repository<RecordEntity>,
+    @InjectRepository(ExperienceEntity)
+    private readonly experienceRepository: Repository<ExperienceEntity>,
   ) {}
   @Public()
   @Get('id')
@@ -60,11 +63,27 @@ export class ReserveController {
       ...body,
       reserve_user: request.user.id,
     };
-    const record = await this.recordRepository.findOne({
-      record_id: body.reserve_record,
-    });
-    record.service_status[body.reserve_service].status = 1;
-    await this.recordRepository.save(record);
+    if(body.reserve_record){
+      const record = await this.recordRepository.findOne({
+        record_id: body.reserve_record,
+      });
+      record.service_status[body.reserve_service].status = 1;
+      await this.recordRepository.save(record);
+    }else{
+      const phone = await this.experienceRepository.findOne({experience_phone: body.reserve_data.phone});
+      if(phone){
+        return {
+          code: 1,
+          msg: '已经预约过了! 该服务仅可预约一次'
+        }
+      }else{
+        const tem = {
+          experience_phone: body.reserve_data.phone,
+          experience_name: body.reserve_data.name
+        }
+        await this.experienceRepository.save(tem);
+      }
+    }
     this.repository.save(res);
   }
   @Post('/cancel')

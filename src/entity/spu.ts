@@ -12,6 +12,8 @@ export class SpuEntity {
   spu_add_time: string;
   @Column('int')
   spu_type: number;
+  @Column()
+  spu_credit: number;
   @Column('varchar')
   spu_price: string;
   @Column({type:'json'})
