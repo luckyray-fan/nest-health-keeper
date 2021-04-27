@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import moment from 'moment-es6';
 import { CommentEntity } from 'src/entity/comment';
+import { ServiceEntity } from 'src/entity/service';
 import { SpuEntity } from 'src/entity/spu';
 import { Public } from 'src/utils/decorator';
 import { In, Repository } from 'typeorm';
@@ -11,8 +12,8 @@ export class SpuController {
   constructor(
     @InjectRepository(SpuEntity)
     private readonly spuRepository: Repository<SpuEntity>,
-    @InjectRepository(CommentEntity)
-    private readonly commentRepository: Repository<CommentEntity>,
+    @InjectRepository(ServiceEntity)
+    private readonly serviceRepository: Repository<ServiceEntity>,
   ) {}
 
   @Public()
@@ -33,27 +34,55 @@ export class SpuController {
   async get(@Query() query) {
     const spu_id = query.spu_id;
     if (query.get_comment) {
-      return (
-        await this.spuRepository.find({ relations: ["comments"] }))
+      const tem = await this.spuRepository.find({
+        relations: ['comments'],
+        where: { spu_id },
+      });
+      const serviceObj = {};
+      await Promise.all(
+        tem.map(async (i) => {
+          await Promise.all(
+            i.spu_service.map(async (j) => {
+              if (!serviceObj[j]) {
+                serviceObj[j] = await this.serviceRepository.findOne({
+                  service_id: j,
+                });
+              }
+            }),
+          );
+        }),
+      );
+      const resArr = [];
+      tem.map((i) => {
+        const temService = i.spu_service.map((j, idx) => {
+          return {
+            [j]: serviceObj[j],
+          };
+        });
+        resArr.push({
+          ...i,
+          spu_service: temService,
+        });
+      });
+      return resArr;
     }
     return await this.find(spu_id);
   }
   @Post('create')
   async create(@Body() body) {
     body = {
-      spu_name: '体能康复套餐',
-      spu_pic:
-        'https://img13.360buyimg.com/n7/jfs/t1/27652/18/12464/928612/5c985ce1Eaa45fcdb/1fb4aa796250c8b6.png',
+      spu_name: '心理测试',
+      spu_pic: 'http://img.luckyray.cn/images.png',
       spu_type: 2,
-      spu_price: 2000,
+      spu_price: 400,
+      spu_credit: 100,
+      spu_service: [5],
       spu_data: {
         spu_desc: {
-          pic: 'http://img.luckyray.cn/health_spu_desc.jpg',
-          desc: '体能康复, 包含了多种服务',
+          pic: 'http://img.luckyray.cn/FrybaOnQrMI-Pn5Q4AwV6O2DHiAs.png',
+          desc: '心理测试, 看看你的人格偏向',
         },
-        other_pics: [
-          'https://img10.360buyimg.com/imgzone/jfs/t1/23825/20/12489/886305/5c985e33E97fa86fa/51ab6809017e21ca.png',
-        ],
+        other_pics: [],
       },
     };
     this.spuRepository.save(body);

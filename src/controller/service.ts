@@ -53,8 +53,8 @@ export class ServiceController {
   @Post('create')
   async create(@Body() body) {
     body = {
-      service_name: '视力检测',
-      service_apparatus: [4],
+      service_name: '心理检测',
+      service_apparatus: [5],
       service_data: {},
     };
     this.repository.save(body);

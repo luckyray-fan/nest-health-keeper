@@ -32,6 +32,7 @@
     "moment": "^2.29.1",
     "moment-es6": "^1.0.0",
     "mysql": "^2.18.1",
+    "nest-schedule": "^0.6.4",
     "nestjs-config": "^1.4.7",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

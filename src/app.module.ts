@@ -35,6 +35,8 @@ import { TransactionEntity } from './entity/transaction';
 import { CreditEntity } from './entity/credit';
 import { CreditController } from './controller/credit';
 import { ExperienceEntity } from './entity/experience';
+import { ScheduleModule } from 'nest-schedule';
+import { ScheduleService } from './schedule';
 
 // https://stackoverflow.com/a/61119284/9950564
 // https://juejin.cn/post/6857391336929263624#heading-12 一个用nodemon全程ts使用, 一个改写orm config读取的路径
@@ -60,6 +62,7 @@ import { ExperienceEntity } from './entity/experience';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '80d' }, // token 过期时效
     }),
+    ScheduleModule.register()
   ],
   controllers: [
     AppController,
@@ -95,6 +98,7 @@ import { ExperienceEntity } from './entity/experience';
     UserService,
     AuthService,
     JwtStrategy,
+    ScheduleService
   ],
 })
 export class AppModule implements NestModule {
