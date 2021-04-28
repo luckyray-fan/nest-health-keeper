@@ -28,6 +28,7 @@ export class CommentController {
       comment_user: request.user.id,
       comment_spu: body.spu.spu_id,
       comment_value: body.rate,
+      comment_order: body.record_order
     };
     const tem = await this.repository.save(res);
     const record = await this.recordRepository.findOne({record_id: body.record_id});

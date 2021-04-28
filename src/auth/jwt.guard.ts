@@ -27,7 +27,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      throw new HttpException('停一下', 400) || new UnauthorizedException();
+      throw new HttpException('停一下, 你要先登录呀', 403) || new UnauthorizedException();
     }
     return user;
   }

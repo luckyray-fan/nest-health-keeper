@@ -45,7 +45,7 @@ export class OrderController {
     const spuObj = {};
     let creditSum = 0;
     if (order.order_usecredit) {
-      creditSum = await new CreditController(this.creditRepository).sum(
+      creditSum = await new CreditController(this.creditRepository, this.spuRepository).sum(
         request,
       );
       const creditPay = {
@@ -110,8 +110,8 @@ export class OrderController {
       record_order: body.order_id,
     });
     const canRefund = record.find((i) => {
-      return Object.values(i).find(
-        (j) => j.status !== SERVICE_STATUS.not_reserve,
+      return Object.values(i.service_status).find(
+        (j:any) => j.status !== SERVICE_STATUS.not_reserve,
       );
     });
     if (canRefund) {
@@ -122,9 +122,6 @@ export class OrderController {
     } else {
       // 删掉 spu 层次的record
       const spuObj = {};
-      const record = await this.recordRepository.find({
-        record_order: body.order_id,
-      });
       await Promise.all(
         record.map(async (i) => {
           if (!spuObj[i.record_spu]) {

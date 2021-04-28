@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ApparatusEntity } from 'src/entity/apparatus';
 import { CreditEntity } from 'src/entity/credit';
 import { ServiceEntity } from 'src/entity/service';
+import { SpuEntity } from 'src/entity/spu';
 import { Public } from 'src/utils/decorator';
 import { Repository } from 'typeorm';
 
@@ -11,6 +12,8 @@ export class CreditController {
   constructor(
     @InjectRepository(CreditEntity)
     private readonly repository: Repository<CreditEntity>,
+    @InjectRepository(SpuEntity)
+    private readonly spuRepository: Repository<SpuEntity>,
   ) {}
   @Get('sum')
   async sum(@Request() request) {
@@ -27,7 +30,19 @@ export class CreditController {
   }
   @Get('list')
   async get(@Request() request) {
-    return this.repository.find({credit_user: request.user.id})
+    const credit = await this.repository.find({credit_user: request.user.id})
+    const spuObj = {};
+    await Promise.all(credit.map(async(i)=>{
+      if(!spuObj[i.credit_spu]){
+        spuObj[i.credit_spu] = await this.spuRepository.findOne({spu_id: i.credit_spu});
+      }
+    }))
+    return credit.map(i=>{
+      return {
+        ...i,
+        spu: spuObj[i.credit_spu]
+      }
+    })
   }
   @Post('create')
   async create(@Body() body) {

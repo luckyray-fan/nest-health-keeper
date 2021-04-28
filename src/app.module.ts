@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { HttpModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -62,7 +62,8 @@ import { ScheduleService } from './schedule';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '80d' }, // token 过期时效
     }),
-    ScheduleModule.register()
+    ScheduleModule.register(),
+    HttpModule
   ],
   controllers: [
     AppController,

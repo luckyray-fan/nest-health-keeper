@@ -24,4 +24,6 @@ export class CommentEntity {
   comment_spu: SpuEntity;
   @Column('int')
   comment_value: number;
+  @Column('int')
+  comment_order: number;
 }

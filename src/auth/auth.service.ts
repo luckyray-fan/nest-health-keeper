@@ -37,7 +37,9 @@ export class AuthService {
           msg: `查无此人`
     };
   }
-
+  async wxCertificate(payload){
+    return this.jwtService.sign(payload);
+  }
   // JWT验证 - Step 3: 处理 jwt 签证
   async certificate(payload: any) {
     payload = {...payload.user};
