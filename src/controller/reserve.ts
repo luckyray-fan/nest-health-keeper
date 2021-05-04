@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { ServiceEntity } from 'src/entity/service';
 import { RecordEntity } from 'src/entity/record';
 import { ExperienceEntity } from 'src/entity/experience';
+import { request } from 'express';
+import { SERVICE_STATUS } from 'src/common/constant';
 
 @Controller('reserve')
 export class ReserveController {
@@ -21,11 +23,41 @@ export class ReserveController {
     @InjectRepository(ExperienceEntity)
     private readonly experienceRepository: Repository<ExperienceEntity>,
   ) {}
-  @Public()
+
   @Get('id')
   async get(@Query() query) {
-    const id = query.service_id;
-    return await this.find(id);
+    const id = query.reserve_id;
+    const reserve = await this.repository.findOne({reserve_id: id});
+    const service = await this.serviceRepository.findOne({service_id: reserve.reserve_service});
+    return {
+      ...reserve,
+      service
+    }
+  }
+  @Get('res')
+  async res(@Request() request) {
+    const id = request.user.id;
+    let record = await this.recordRepository.find({ record_user: id });
+    const recordArr = [];
+    record.map((i) => {
+      Object.values(i.service_status).map(
+        (j: any) => {
+          if(j.status === SERVICE_STATUS.reserved){
+            recordArr.push(j.reserve);
+          }
+        }
+      );
+    })
+    const reserveRes = []
+    await Promise.all(recordArr.map(async (i)=>{
+      const tem = await this.repository.findOne({reserve_id: i});
+      const service = await this.serviceRepository.findOne({service_id: tem.reserve_service});
+      reserveRes.push({
+        ...tem,
+        service
+      });
+    }))
+    return reserveRes;
   }
   @Get('list')
   async list(@Request() request) {
@@ -63,28 +95,33 @@ export class ReserveController {
       ...body,
       reserve_user: request.user.id,
     };
-    if(body.reserve_record){
+    const reserveRes = await this.repository.save(res);
+    if (body.reserve_record) {
       const record = await this.recordRepository.findOne({
         record_id: body.reserve_record,
       });
-      record.service_status[body.reserve_service].status = 1;
+      record.service_status[body.reserve_service] = {
+        status: SERVICE_STATUS.reserving,
+        reserve: reserveRes.reserve_id,
+      };
       await this.recordRepository.save(record);
-    }else{
-      const phone = await this.experienceRepository.findOne({experience_phone: body.reserve_data.phone});
-      if(phone){
+    } else {
+      const phone = await this.experienceRepository.findOne({
+        experience_phone: body.reserve_data.phone,
+      });
+      if (phone) {
         return {
           code: 1,
-          msg: '已经预约过了! 该服务仅可预约一次'
-        }
-      }else{
+          msg: '已经预约过了! 该服务仅可预约一次',
+        };
+      } else {
         const tem = {
           experience_phone: body.reserve_data.phone,
-          experience_name: body.reserve_data.name
-        }
+          experience_name: body.reserve_data.name,
+        };
         await this.experienceRepository.save(tem);
       }
     }
-    this.repository.save(res);
   }
   @Post('/cancel')
   async cancel(@Body() body, @Request() request) {

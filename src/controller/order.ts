@@ -50,7 +50,7 @@ export class OrderController {
       );
       const creditPay = {
         credit_data: {},
-        credit_Order: order.order_id,
+        credit_order: order.order_id,
         credit_user: request.user.id,
         credit_num: creditSum,
       };
